@@ -1,0 +1,956 @@
+```html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استبيان بناء وتصميم المواقع الإلكترونية</title>
+    <!-- تحميل خط Cairo من Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- تحميل Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        navy: {
+                            950: '#060B19',
+                            900: '#0B132B',
+                            800: '#1C2541',
+                            700: '#2A365C'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* تخصيص شريط التمرير والتأثيرات الزجاجية */
+        body {
+            font-family: 'Cairo', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .glass-card {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .option-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .option-card:hover {
+            transform: translateY(-2px);
+        }
+        /* إخفاء أزرار الراديو والـ Checkbox الافتراضية واستبدالها بتصميم مخصص */
+        input[type="radio"]:checked + .option-content,
+        input[type="checkbox"]:checked + .option-content {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.12);
+            box-shadow: 0 4px 20px -2px rgba(56, 189, 248, 0.25);
+        }
+        html:not(.dark) input[type="radio"]:checked + .option-content,
+        html:not(.dark) input[type="checkbox"]:checked + .option-content {
+            border-color: #0284c7;
+            background: rgba(2, 132, 199, 0.08);
+            box-shadow: 0 4px 15px -2px rgba(2, 132, 199, 0.15);
+        }
+        input[type="radio"]:checked + .option-content .check-indicator,
+        input[type="checkbox"]:checked + .option-content .check-indicator {
+            background-color: #38bdf8;
+            border-color: #38bdf8;
+        }
+        input[type="radio"]:checked + .option-content .check-indicator svg,
+        input[type="checkbox"]:checked + .option-content .check-indicator svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-navy-950 dark:text-slate-100 min-h-screen relative overflow-x-hidden selection:bg-sky-500 selection:text-white">
+
+    <!-- خلفيات إضاءة جمالية (Ambient Glow) -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-sky-500/20 dark:bg-sky-500/15 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/3 -left-40 w-96 h-96 bg-purple-600/20 dark:bg-purple-600/15 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 right-1/4 w-96 h-96 bg-indigo-500/20 dark:bg-indigo-500/15 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- الشريط العلوي الثابت (Header & Progress Bar) -->
+    <header class="sticky top-0 z-40 glass-card bg-white/80 dark:bg-navy-900/80 border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
+            <!-- الشعار والعنوان -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-sky-500/25 shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base sm:text-lg leading-tight bg-gradient-to-l from-sky-500 to-purple-500 bg-clip-text text-transparent">مخطط المشاريع الرقمية</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">حدد مواصفات موقعك واحصل على التقدير الفوري</p>
+                </div>
+            </div>
+
+            <!-- الأدوات: عداد المشاهدات + زر الوضع الليلي/النهاري -->
+            <div class="flex items-center gap-2.5">
+                <!-- شارة عداد المشاهدات -->
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-navy-800/90 border border-slate-200 dark:border-slate-700/80 text-xs sm:text-sm font-semibold shadow-inner" title="إجمالي زيارات الصفحة">
+                    <span class="relative flex h-2.5 w-2.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </span>
+                    <span class="text-slate-600 dark:text-slate-300">المشاهدات:</span>
+                    <span id="viewsCounter" class="font-bold text-sky-600 dark:text-sky-400 tabular-nums">...</span>
+                </div>
+
+                <!-- زر تبديل الثيم -->
+                <button id="themeToggle" type="button" aria-label="تبديل المظهر" class="p-2.5 rounded-xl bg-slate-100 dark:bg-navy-800 hover:bg-slate-200 dark:hover:bg-navy-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition-colors">
+                    <!-- أيقونة الشمس (تظهر في الوضع الليلي) -->
+                    <svg id="sunIcon" class="w-5 h-5 hidden dark:block text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <!-- أيقونة القمر (تظهر في الوضع النهاري) -->
+                    <svg id="moonIcon" class="w-5 h-5 block dark:hidden text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- شريط التقدم (Progress Bar) -->
+        <div class="w-full bg-slate-200 dark:bg-navy-800 h-1.5 overflow-hidden">
+            <div id="progressBar" class="bg-gradient-to-l from-sky-400 via-indigo-500 to-purple-500 h-full transition-all duration-500 ease-out" style="width: 10%"></div>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        
+        <!-- مقدمة ترحيبية -->
+        <div class="text-center mb-10 space-y-3">
+            <span class="inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-wide bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
+                نموذج جمع المتطلبات الذكي
+            </span>
+            <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white leading-snug">
+                لنبدأ بتصميم موقعك الإلكتروني المثالي
+            </h2>
+            <p class="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+                أجب على الأسئلة التالية بدقة؛ سيقوم النظام بحساب <span class="text-sky-600 dark:text-sky-400 font-semibold">الوقت التقديري للتنفيذ</span> تلقائياً وتجهيز ملخص احترافي لإرساله مباشرة عبر واتساب.
+            </p>
+        </div>
+
+        <!-- نموذج الاستبيان -->
+        <form id="questionnaireForm" class="space-y-8" onsubmit="return false;">
+
+            <!-- القسم 0: البيانات الأساسية (العميل والبراند) -->
+            <section class="glass-card bg-white/90 dark:bg-navy-900/75 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-400 font-bold flex items-center justify-center text-sm border border-sky-500/20">0</span>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-bold">البيانات الأساسية (العميل والبراند)</h3>
+                        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">للتعرف عليك وتحديد هوية المشروع الرئيسية</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- اسم العميل -->
+                    <div>
+                        <label for="clientName" class="block text-sm font-bold mb-2 text-slate-700 dark:text-slate-200">
+                            أ) اسم حضرتك بالكامل (أو الشخص المسؤول عن التواصل) <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="text" id="clientName" placeholder="مثال: أحمد محمود" required
+                            class="w-full px-4 py-3.5 rounded-xl bg-slate-50 dark:bg-navy-800/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 dark:focus:border-sky-400 focus:ring-2 focus:ring-sky-500/20 outline-none transition-all text-sm sm:text-base">
+                    </div>
+
+                    <!-- اسم البراند -->
+                    <div>
+                        <label class="block text-sm font-bold mb-3 text-slate-700 dark:text-slate-200">
+                            ب) حالة اسم البراند / الشركة / المشروع (الذي سيظهر في الموقع)
+                        </label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                            <label class="option-card cursor-pointer block">
+                                <input type="radio" name="brandStatus" value="الاسم محدد وجاهز" class="sr-only" checked>
+                                <div class="option-content h-full p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                                    <div class="check-indicator w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0 transition-colors">
+                                        <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    </div>
+                                    <span class="text-xs sm:text-sm font-semibold">الاسم محدد وجاهز</span>
+                                </div>
+                            </label>
+
+                            <label class="option-card cursor-pointer block">
+                                <input type="radio" name="brandStatus" value="سأستخدم اسمي الشخصي كبراند" class="sr-only">
+                                <div class="option-content h-full p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                                    <div class="check-indicator w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0 transition-colors">
+                                        <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    </div>
+                                    <span class="text-xs sm:text-sm font-semibold">اسمي الشخصي كبراند</span>
+                                </div>
+                            </label>
+
+                            <label class="option-card cursor-pointer block">
+                                <input type="radio" name="brandStatus" value="ما زلت في مرحلة اختيار الاسم وأحتاج لاقتراحات" class="sr-only">
+                                <div class="option-content h-full p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                                    <div class="check-indicator w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0 transition-colors">
+                                        <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    </div>
+                                    <span class="text-xs sm:text-sm font-semibold">أحتاج اقتراحات للاسم</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <input type="text" id="brandName" placeholder="✍️ اكتب اسم البراند هنا (بالعربي أو الإنجليزي كما تريده في الموقع)..."
+                            class="w-full px-4 py-3.5 rounded-xl bg-slate-50 dark:bg-navy-800/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 dark:focus:border-sky-400 focus:ring-2 focus:ring-sky-500/20 outline-none transition-all text-sm">
+                    </div>
+                </div>
+            </section>
+
+            <!-- السؤال 1: الهدف الرئيسي من الموقع -->
+            <section class="glass-card bg-white/90 dark:bg-navy-900/75 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
+                <div class="flex items-center justify-between gap-3 mb-6">
+                    <div class="flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 font-bold flex items-center justify-center text-sm border border-purple-500/20">1</span>
+                        <h3 class="text-lg sm:text-xl font-bold">ما هو الهدف الرئيسي من الموقع؟</h3>
+                    </div>
+                    <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-navy-800 text-slate-500 dark:text-slate-400">اختيار واحد</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 mb-4">
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="goal" value="موقع تعريفي لشركة أو نشاط تجاري" data-days="6" class="sr-only" checked>
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-start gap-3">
+                            <div class="check-indicator mt-0.5 w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm sm:text-base">موقع تعريفي لشركة أو نشاط تجاري</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Corporate / Business Portfolio</div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="goal" value="معرض أعمال شخصي (Portfolio / CV)" data-days="4" class="sr-only">
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-start gap-3">
+                            <div class="check-indicator mt-0.5 w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm sm:text-base">معرض أعمال شخصي</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Personal Portfolio / CV</div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="goal" value="متجر إلكتروني لبيع منتجات (E-commerce)" data-days="14" class="sr-only">
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-start gap-3">
+                            <div class="check-indicator mt-0.5 w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm sm:text-base">متجر إلكتروني لبيع منتجات</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">E-commerce Store</div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="goal" value="مدونة أو موقع مقالات ومحتوى (Blog)" data-days="6" class="sr-only">
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-start gap-3">
+                            <div class="check-indicator mt-0.5 w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm sm:text-base">مدونة أو موقع مقالات ومحتوى</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Blog / Content Platform</div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block md:col-span-2">
+                        <input type="radio" name="goal" value="صفحة هبوط تسويقية لخدمة أو منتج معين (Landing Page)" data-days="3" class="sr-only">
+                        <div class="option-content p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-start gap-3">
+                            <div class="check-indicator mt-0.5 w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm sm:text-base">صفحة هبوط تسويقية لخدمة أو منتج معين</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">High-Converting Landing Page</div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+
+                <input type="text" id="goalCustom" placeholder="✍️ أخرى (اكتب هدفاً مختلفاً أو تفاصيل إضافية هنا)..."
+                    class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-navy-800/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 outline-none text-sm">
+            </section>
+
+            <!-- السؤال 2: الهوية البصرية -->
+            <section class="glass-card bg-white/90 dark:bg-navy-900/75 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-400 font-bold flex items-center justify-center text-sm border border-sky-500/20">2</span>
+                    <h3 class="text-lg sm:text-xl font-bold">هل تملك هوية بصرية جاهزة (شعار، ألوان رسمية، خطوط)؟</h3>
+                </div>
+
+                <div class="grid grid-cols-1 gap-3.5 mb-4">
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="branding" value="نعم، أملك هوية بصرية كاملة (Logo + Brand Guidelines)" data-days="0" class="sr-only" checked>
+                        <div class="option-content p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm sm:text-base">نعم، أملك هوية بصرية كاملة (Logo + Brand Guidelines)</span>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="branding" value="لدي شعار فقط، وليس لدي ألوان محددة" data-days="1" class="sr-only">
+                        <div class="option-content p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm sm:text-base">لدي شعار فقط، وليس لدي ألوان محددة</span>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="branding" value="ليس لدي أي شيء، وأحتاج أن تقترح عليّ الهوية والألوان" data-days="2" class="sr-only">
+                        <div class="option-content p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm sm:text-base">ليس لدي أي شيء، وأحتاج أن تقترح عليّ الهوية والألوان</span>
+                        </div>
+                    </label>
+                </div>
+
+                <input type="text" id="brandingCustom" placeholder="✍️ أخرى (اكتب الألوان المفضلة لديك أو أي ملاحظات عن الهوية)..."
+                    class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-navy-800/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 outline-none text-sm">
+            </section>
+
+            <!-- السؤال 3: الطابع البصري المفضل -->
+            <section class="glass-card bg-white/90 dark:bg-navy-900/75 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 font-bold flex items-center justify-center text-sm border border-purple-500/20">3</span>
+                    <h3 class="text-lg sm:text-xl font-bold">ما هو الطابع أو الأسلوب البصري (Design Style) المفضل؟</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 mb-4">
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="style" value="بسيط ونظيف (Minimalist & Clean)" data-days="0" class="sr-only" checked>
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-start gap-3">
+                            <div class="check-indicator mt-0.5 w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm sm:text-base">بسيط ونظيف (Minimalist)</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">يعتمد على المساحات البيضاء والوضوح</div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="style" value="جريء وعصري (Neo-Brutalism / Modern)" data-days="1" class="sr-only">
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-start gap-3">
+                            <div class="check-indicator mt-0.5 w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm sm:text-base">جريء وعصري (Modern)</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">تصميم بارز وحديث بألوان حيوية</div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="style" value="زجاجي فخم وراقي (Glassmorphism & Dark Mode)" data-days="1" class="sr-only">
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-start gap-3">
+                            <div class="check-indicator mt-0.5 w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm sm:text-base">زجاجي فخم وراقي (Glassmorphism)</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">مظهر داكن مع تأثيرات شفافة وإضاءات</div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="style" value="احترافي رسمي للشركات (Corporate & Professional)" data-days="0" class="sr-only">
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-start gap-3">
+                            <div class="check-indicator mt-0.5 w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm sm:text-base">احترافي رسمي للشركات (Corporate)</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">تصميم مؤسسي موثوق ومنظم</div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+
+                <input type="text" id="styleCustom" placeholder="✍️ أخرى (اكتب وصفاً للأسلوب البصري الذي تتخيله)..."
+                    class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-navy-800/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 outline-none text-sm">
+            </section>
+
+            <!-- السؤال 4: الصفحات الأساسية المطلوبة (متعدد الاختيار) -->
+            <section class="glass-card bg-white/90 dark:bg-navy-900/75 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
+                <div class="flex items-center justify-between gap-3 mb-6">
+                    <div class="flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-400 font-bold flex items-center justify-center text-sm border border-sky-500/20">4</span>
+                        <h3 class="text-lg sm:text-xl font-bold">ما هي الصفحات الأساسية المطلوبة في الموقع؟</h3>
+                    </div>
+                    <span class="text-xs px-2.5 py-1 rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400 font-semibold">متعدد الاختيار</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 mb-4">
+                    <label class="option-card cursor-pointer block">
+                        <input type="checkbox" name="pages" value="الرئيسية، من نحن، خدماتنا، اتصل بنا" data-days="0" class="sr-only" checked>
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-md border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3.5 h-3.5 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm">الرئيسية (Home)، من نحن، خدماتنا، اتصل بنا</span>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="checkbox" name="pages" value="صفحة معرض الأعمال (Portfolio / Projects) مع تفاصيل المشاريع" data-days="2" class="sr-only">
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-md border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3.5 h-3.5 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm">معرض الأعمال (Portfolio) مع تفاصيل المشاريع</span>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="checkbox" name="pages" value="صفحة متجر إلكتروني مع عربة تسوق ودفع" data-days="4" class="sr-only">
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-md border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3.5 h-3.5 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm">متجر إلكتروني مع عربة تسوق ودفع</span>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="checkbox" name="pages" value="مدونة أو قسم للمقالات والأخبار" data-days="2" class="sr-only">
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-md border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3.5 h-3.5 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm">مدونة أو قسم للمقالات والأخبار</span>
+                        </div>
+                    </label>
+                </div>
+
+                <input type="text" id="pagesCustom" placeholder="✍️ أخرى (اكتب أي صفحات إضافية تريدها مثل: الأسئلة الشائعة، آراء العملاء، التوظيف)..."
+                    class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-navy-800/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 outline-none text-sm">
+            </section>
+
+            <!-- السؤال 5: اللغات المطلوبة -->
+            <section class="glass-card bg-white/90 dark:bg-navy-900/75 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 font-bold flex items-center justify-center text-sm border border-purple-500/20">5</span>
+                    <h3 class="text-lg sm:text-xl font-bold">هل الموقع بحاجة إلى لغات متعددة (عربي وإنجليزي مثلاً)؟</h3>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-4">
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="languages" value="نعم، يدعم اللغتين (عربي / إنجليزي) مع زر لتغيير اللغة" data-days="2" class="sr-only">
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm">عربي + إنجليزي (مع زر تبديل)</span>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="languages" value="لا، اللغة العربية فقط" data-days="0" class="sr-only" checked>
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm">اللغة العربية فقط</span>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="languages" value="لا، اللغة الإنجليزية فقط" data-days="0" class="sr-only">
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm">اللغة الإنجليزية فقط</span>
+                        </div>
+                    </label>
+                </div>
+
+                <input type="text" id="languagesCustom" placeholder="✍️ أخرى (مثل: فرنسي، ألماني، أو أكثر من لغتين)..."
+                    class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-navy-800/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 outline-none text-sm">
+            </section>
+
+            <!-- السؤال 6: جاهزية المحتوى النصي والصور -->
+            <section class="glass-card bg-white/90 dark:bg-navy-900/75 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-400 font-bold flex items-center justify-center text-sm border border-sky-500/20">6</span>
+                    <h3 class="text-lg sm:text-xl font-bold">هل لديك المحتوى النصي والصور الخاصة بالموقع جاهزة؟</h3>
+                </div>
+
+                <div class="grid grid-cols-1 gap-3.5 mb-4">
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="contentReady" value="نعم، جميع النصوص والصور جاهزة وسيتم إرسالها" data-days="0" class="sr-only" checked>
+                        <div class="option-content p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm sm:text-base">نعم، جميع النصوص والصور جاهزة وسيتم إرسالها</span>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="contentReady" value="لدي النصوص فقط وأحتاج صور تجريبية (Stock Images)" data-days="1" class="sr-only">
+                        <div class="option-content p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm sm:text-base">لدي النصوص فقط وأحتاج صور عالية الجودة مناسبة للمجال</span>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="contentReady" value="لا شيء جاهز، وأحتاج أن تكتب النصوص وتوفر الصور" data-days="2" class="sr-only">
+                        <div class="option-content p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm sm:text-base">لا شيء جاهز، وأحتاج أن تكتب النصوص وتوفر الصور</span>
+                        </div>
+                    </label>
+                </div>
+
+                <input type="text" id="contentCustom" placeholder="✍️ أخرى (اكتب أي تفاصيل إضافية حول المحتوى)..."
+                    class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-navy-800/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 outline-none text-sm">
+            </section>
+
+            <!-- السؤال 7: التقنيات والخصائص الإضافية (متعدد الاختيار) -->
+            <section class="glass-card bg-white/90 dark:bg-navy-900/75 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
+                <div class="flex items-center justify-between gap-3 mb-6">
+                    <div class="flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 font-bold flex items-center justify-center text-sm border border-purple-500/20">7</span>
+                        <h3 class="text-lg sm:text-xl font-bold">ما هي التقنيات أو الخصائص الإضافية المطلوبة بالموقع؟</h3>
+                    </div>
+                    <span class="text-xs px-2.5 py-1 rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400 font-semibold">متعدد الاختيار</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 mb-4">
+                    <label class="option-card cursor-pointer block">
+                        <input type="checkbox" name="features" value="متوافق تماماً وسريع الاستجابة على الجوال والأجهزة اللوحية (Responsive)" data-days="0" class="sr-only" checked>
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-md border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3.5 h-3.5 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm">متوافق تماماً مع الجوال والأجهزة اللوحية (Responsive)</span>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="checkbox" name="features" value="نموذج تواصل فعال (Contact Form) يرسل إشعارات" data-days="1" class="sr-only" checked>
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-md border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3.5 h-3.5 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm">نموذج تواصل فعال (Contact Form)</span>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="checkbox" name="features" value="ربط الموقع بمنصات التواصل الاجتماعي وزر واتساب مباشر" data-days="0" class="sr-only" checked>
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-md border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3.5 h-3.5 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm">ربط بمنصات التواصل الاجتماعي وزر واتساب</span>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="checkbox" name="features" value="نظام وضع ليلي ونهاري (Dark/Light Mode Toggle)" data-days="1" class="sr-only">
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-md border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3.5 h-3.5 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm">نظام وضع ليلي ونهاري (Dark/Light Mode)</span>
+                        </div>
+                    </label>
+                </div>
+
+                <input type="text" id="featuresCustom" placeholder="✍️ أخرى (مثل: حجز مواعيد، خريطة جوجل، لوحة تحكم، تحسين محركات البحث SEO)..."
+                    class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-navy-800/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 outline-none text-sm">
+            </section>
+
+            <!-- السؤال 8: أمثلة مرجعية (References) -->
+            <section class="glass-card bg-white/90 dark:bg-navy-900/75 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-400 font-bold flex items-center justify-center text-sm border border-sky-500/20">8</span>
+                    <h3 class="text-lg sm:text-xl font-bold">هل لديك مواقع أعجبك تصميمها وتريد أن يكون موقعك مستوحى منها؟</h3>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-4">
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="references" value="نعم، سأرفق روابط لمواقع تعجبني بالأسفل" class="sr-only">
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm">نعم، سأرفق روابط لمواقع تعجبني</span>
+                        </div>
+                    </label>
+
+                    <label class="option-card cursor-pointer block">
+                        <input type="radio" name="references" value="ليس لدي مواقع معينة، أترك الأمر لإبداعك وخبرتك" class="sr-only" checked>
+                        <div class="option-content h-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-navy-800/40 flex items-center gap-3">
+                            <div class="check-indicator w-5 h-5 rounded-full border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center shrink-0">
+                                <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            </div>
+                            <span class="font-semibold text-sm">أترك الأمر لإبداعك وخبرتك</span>
+                        </div>
+                    </label>
+                </div>
+
+                <textarea id="referencesCustom" rows="3" placeholder="✍️ اكتب الروابط المرجعية أو أي ملاحظات وتفاصيل إضافية تود إخبارنا بها هنا..."
+                    class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-navy-800/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 outline-none text-sm resize-none"></textarea>
+            </section>
+
+            <!-- بطاقة الملخص والوقت التقديري + أزرار الإرسال -->
+            <section class="glass-card bg-gradient-to-br from-navy-900 via-navy-800 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 border border-sky-500/30 shadow-2xl shadow-sky-900/20">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-white/10">
+                    <div class="space-y-1.5">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/20 text-sky-300 text-xs font-bold">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            حاسبة الوقت التقديري الذكية
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-extrabold">المدة التقديرية لتنفيذ مشروعك</h3>
+                        <p class="text-slate-300 text-xs sm:text-sm">يتم تحديث المدة تلقائياً بناءً على نوع الموقع والصفحات والمميزات التي اخترتها.</p>
+                    </div>
+
+                    <!-- صندوق عرض الأيام التقديرية -->
+                    <div class="w-full md:w-auto bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-6 py-4 text-center shrink-0">
+                        <div class="text-xs text-sky-300 font-semibold mb-1">الوقت المتوقع للتسليم</div>
+                        <div id="estimatedTimeDisplay" class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                            من 5 إلى 7 أيام
+                        </div>
+                        <div class="text-[11px] text-slate-300 mt-1">أيام عمل فعلية</div>
+                    </div>
+                </div>
+
+                <!-- رسالة تنبيه في حالة عدم كتابة الاسم -->
+                <div id="validationAlert" class="hidden mt-4 p-3.5 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-200 text-sm flex items-center gap-2.5">
+                    <svg class="w-5 h-5 shrink-0 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <span>يرجى كتابة <strong>اسم حضرتك بالكامل</strong> في القسم الأول (0) قبل إرسال الطلب.</span>
+                </div>
+
+                <!-- أزرار الإجراءات -->
+                <div class="mt-6 flex flex-col sm:flex-row items-center gap-4">
+                    <button id="sendWhatsappBtn" type="button"
+                        class="w-full sm:flex-1 py-4 px-6 rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-base sm:text-lg shadow-lg shadow-emerald-600/30 hover:shadow-emerald-500/40 transform hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 cursor-pointer">
+                        <!-- أيقونة واتساب -->
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.029 18.88c-1.161 0-2.305-.292-3.318-.844l-3.677.964.984-3.595c-.607-1.052-.927-2.246-.926-3.468.001-3.825 3.113-6.937 6.937-6.937 1.856.001 3.598.723 4.907 2.034 1.31 1.311 2.031 3.054 2.03 4.908-.001 3.825-3.113 6.938-6.937 6.938z"/>
+                        </svg>
+                        <span>إرسال الطلب والوقت التقديري عبر واتساب</span>
+                    </button>
+
+                    <button id="copySummaryBtn" type="button"
+                        class="w-full sm:w-auto py-4 px-5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                        <span id="copyBtnText">نسخ الملخص</span>
+                    </button>
+                </div>
+            </section>
+        </form>
+
+        <!-- تذييل الصفحة -->
+        <footer class="mt-12 text-center text-xs text-slate-500 dark:text-slate-400">
+            <p>جميع البيانات تُجمع بسرية تامة لتحديد أفضل خطة تنفيذ لمشروعك الرقمي</p>
+        </footer>
+    </main>
+
+    <!-- مربع نص مخفي لدعم النسخ الآمن -->
+    <textarea id="hiddenCopyArea" class="sr-only" aria-hidden="true"></textarea>
+
+    <!-- منطق التطبيق وربط Firebase لعداد المشاهدات -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // 1. إدارة الثيم (Dark / Light Mode)
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+
+        themeToggleBtn.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+        });
+
+        // 2. عداد المشاهدات الفعلي باستخدام Firebase Firestore
+        const viewsCounterEl = document.getElementById('viewsCounter');
+
+        async function initViewsCounter() {
+            try {
+                // التحقق من وجود إعدادات Firebase في البيئة
+                if (typeof __firebase_config === 'undefined') {
+                    viewsCounterEl.textContent = "1,024";
+                    return;
+                }
+
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
+
+                // المصادقة أولاً قبل أي عملية قراءة أو كتابة
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                if (!auth.currentUser) return;
+
+                // المسار الصارم للبيانات العامة حسب القواعد
+                const statsDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'site_stats', 'views_counter');
+
+                // الاستماع الحي للتحديثات على عداد المشاهدات
+                onSnapshot(statsDocRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const count = docSnap.data().count || 1;
+                        viewsCounterEl.textContent = count.toLocaleString('en-US');
+                    }
+                }, (error) => {
+                    console.error("Snapshot error:", error);
+                    viewsCounterEl.textContent = "1";
+                });
+
+                // زيادة العداد بمقدار 1 عند فتح الصفحة
+                const currentSnap = await getDoc(statsDocRef);
+                if (!currentSnap.exists()) {
+                    await setDoc(statsDocRef, { count: 1, updatedAt: Date.now() });
+                } else {
+                    await updateDoc(statsDocRef, { 
+                        count: increment(1),
+                        updatedAt: Date.now()
+                    });
+                }
+            } catch (err) {
+                console.error("Views counter error:", err);
+                viewsCounterEl.textContent = "1";
+            }
+        }
+
+        initViewsCounter();
+
+        // 3. حاسبة الوقت التقديري الذكية وشريط التقدم
+        const form = document.getElementById('questionnaireForm');
+        const estimatedTimeDisplay = document.getElementById('estimatedTimeDisplay');
+        const progressBar = document.getElementById('progressBar');
+
+        function calculateEstimationAndProgress() {
+            let totalDays = 0;
+
+            // حساب الأيام من أزرار الراديو المختارة
+            const checkedRadios = form.querySelectorAll('input[type="radio"]:checked');
+            checkedRadios.forEach(radio => {
+                const days = parseInt(radio.getAttribute('data-days') || '0', 10);
+                totalDays += days;
+            });
+
+            // حساب الأيام من مربعات الاختيار المتعددة (Checkboxes)
+            const checkedBoxes = form.querySelectorAll('input[type="checkbox"]:checked');
+            checkedBoxes.forEach(box => {
+                const days = parseInt(box.getAttribute('data-days') || '0', 10);
+                totalDays += days;
+            });
+
+            // ضمان حد أدنى منطقي للأيام
+            if (totalDays < 3) totalDays = 3;
+
+            const minDays = totalDays;
+            const maxDays = totalDays + 2;
+            estimatedTimeDisplay.textContent = `من ${minDays} إلى ${maxDays} أيام`;
+
+            // تحديث شريط التقدم بناءً على تفاعل المستخدم مع الحقول
+            let completedSections = 2; // الأسئلة الافتراضية المحددة
+            if (document.getElementById('clientName').value.trim() !== '') completedSections += 2;
+            if (document.getElementById('brandName').value.trim() !== '') completedSections += 1;
+            if (checkedBoxes.length > 0) completedSections += 2;
+            
+            const customInputs = ['goalCustom', 'brandingCustom', 'styleCustom', 'pagesCustom', 'languagesCustom', 'contentCustom', 'featuresCustom', 'referencesCustom'];
+            const filledCustoms = customInputs.filter(id => document.getElementById(id).value.trim() !== '').length;
+            completedSections += Math.min(filledCustoms, 3);
+
+            const percentage = Math.min(Math.round((completedSections / 10) * 100), 100);
+            progressBar.style.width = `${percentage}%`;
+
+            return `من ${minDays} إلى ${maxDays} أيام عمل`;
+        }
+
+        // الاستماع لأي تغيير في الفورم لتحديث الوقت التقديري فوراً
+        form.addEventListener('change', calculateEstimationAndProgress);
+        form.addEventListener('input', calculateEstimationAndProgress);
+        calculateEstimationAndProgress();
+
+        // 4. تجميع البيانات وتنسيق رسالة الواتساب
+        function buildSummaryMessage() {
+            const clientName = document.getElementById('clientName').value.trim();
+            const brandStatus = form.querySelector('input[name="brandStatus"]:checked')?.value || '';
+            const brandName = document.getElementById('brandName').value.trim() || 'لم يُحدد بعد';
+
+            const goal = form.querySelector('input[name="goal"]:checked')?.value || '';
+            const goalCustom = document.getElementById('goalCustom').value.trim();
+
+            const branding = form.querySelector('input[name="branding"]:checked')?.value || '';
+            const brandingCustom = document.getElementById('brandingCustom').value.trim();
+
+            const style = form.querySelector('input[name="style"]:checked')?.value || '';
+            const styleCustom = document.getElementById('styleCustom').value.trim();
+
+            const pagesChecked = Array.from(form.querySelectorAll('input[name="pages"]:checked')).map(el => el.value);
+            const pagesCustom = document.getElementById('pagesCustom').value.trim();
+            if (pagesCustom) pagesChecked.push(`إضافي: ${pagesCustom}`);
+
+            const languages = form.querySelector('input[name="languages"]:checked')?.value || '';
+            const languagesCustom = document.getElementById('languagesCustom').value.trim();
+
+            const contentReady = form.querySelector('input[name="contentReady"]:checked')?.value || '';
+            const contentCustom = document.getElementById('contentCustom').value.trim();
+
+            const featuresChecked = Array.from(form.querySelectorAll('input[name="features"]:checked')).map(el => el.value);
+            const featuresCustom = document.getElementById('featuresCustom').value.trim();
+            if (featuresCustom) featuresChecked.push(`إضافي: ${featuresCustom}`);
+
+            const references = form.querySelector('input[name="references"]:checked')?.value || '';
+            const referencesCustom = document.getElementById('referencesCustom').value.trim();
+
+            const estimatedTime = calculateEstimationAndProgress();
+
+            // تنسيق الرسالة بشكل احترافي للواتساب
+            let msg = `🚀 *طلب تصميم وتطوير موقع إلكتروني جديد*\n`;
+            msg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+            msg += `👤 *0. البيانات الأساسية:*\n`;
+            msg += `• *اسم العميل:* ${clientName}\n`;
+            msg += `• *حالة البراند:* ${brandStatus}\n`;
+            msg += `• *اسم البراند:* ${brandName}\n\n`;
+
+            msg += `🎯 *1. الهدف الرئيسي من الموقع:*\n`;
+            msg += `• ${goal}\n`;
+            if (goalCustom) msg += `• _ملاحظة إضافية:_ ${goalCustom}\n`;
+            msg += `\n`;
+
+            msg += `🎨 *2. الهوية البصرية:*\n`;
+            msg += `• ${branding}\n`;
+            if (brandingCustom) msg += `• _ملاحظة إضافية:_ ${brandingCustom}\n`;
+            msg += `\n`;
+
+            msg += `✨ *3. الطابع البصري المفضل:*\n`;
+            msg += `• ${style}\n`;
+            if (styleCustom) msg += `• _ملاحظة إضافية:_ ${styleCustom}\n`;
+            msg += `\n`;
+
+            msg += `📄 *4. الصفحات الأساسية المطلوبة:*\n`;
+            msg += pagesChecked.length ? pagesChecked.map(p => `• ${p}`).join('\n') + '\n' : '• لم يتم التحديد\n';
+            msg += `\n`;
+
+            msg += `🌐 *5. اللغات المطلوبة:*\n`;
+            msg += `• ${languages}\n`;
+            if (languagesCustom) msg += `• _ملاحظة إضافية:_ ${languagesCustom}\n`;
+            msg += `\n`;
+
+            msg += `📝 *6. جاهزية المحتوى والصور:*\n`;
+            msg += `• ${contentReady}\n`;
+            if (contentCustom) msg += `• _ملاحظة إضافية:_ ${contentCustom}\n`;
+            msg += `\n`;
+
+            msg += `⚙️ *7. التقنيات والخصائص الإضافية:*\n`;
+            msg += featuresChecked.length ? featuresChecked.map(f => `• ${f}`).join('\n') + '\n' : '• لم يتم التحديد\n';
+            msg += `\n`;
+
+            msg += `🔗 *8. الأمثلة المرجعية (References):*\n`;
+            msg += `• ${references}\n`;
+            if (referencesCustom) msg += `• _الروابط/التفاصيل:_ ${referencesCustom}\n`;
+            msg += `\n`;
+
+            msg += `━━━━━━━━━━━━━━━━━━━━\n`;
+            msg += `⏱️ *الوقت التقديري للتنفيذ:* *${estimatedTime}*\n`;
+            msg += `━━━━━━━━━━━━━━━━━━━━`;
+
+            return msg;
+        }
+
+        // 5. زر الإرسال عبر واتساب إلى الرقم 01508864733
+        const sendWhatsappBtn = document.getElementById('sendWhatsappBtn');
+        const validationAlert = document.getElementById('validationAlert');
+        const clientNameInput = document.getElementById('clientName');
+
+        sendWhatsappBtn.addEventListener('click', () => {
+            const clientName = clientNameInput.value.trim();
+            if (!clientName) {
+                validationAlert.classList.remove('hidden');
+                clientNameInput.focus();
+                clientNameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            validationAlert.classList.add('hidden');
+            const message = buildSummaryMessage();
+            const phoneNumber = "201508864733"; // الرقم المصري بصيغة دولية
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            
+            window.open(whatsappUrl, '_blank');
+        });
+
+        clientNameInput.addEventListener('input', () => {
+            if (clientNameInput.value.trim()) {
+                validationAlert.classList.add('hidden');
+            }
+        });
+
+        // 6. زر نسخ الملخص (باستخدام document.execCommand لضمان العمل داخل iFrame)
+        const copySummaryBtn = document.getElementById('copySummaryBtn');
+        const copyBtnText = document.getElementById('copyBtnText');
+        const hiddenCopyArea = document.getElementById('hiddenCopyArea');
+
+        copySummaryBtn.addEventListener('click', () => {
+            const clientName = clientNameInput.value.trim() || 'عميل جديد';
+            const message = buildSummaryMessage();
+            hiddenCopyArea.value = message;
+            hiddenCopyArea.classList.remove('sr-only');
+            hiddenCopyArea.select();
+            
+            try {
+                document.execCommand('copy');
+                copyBtnText.textContent = "تم النسخ بنجاح!";
+                setTimeout(() => {
+                    copyBtnText.textContent = "نسخ الملخص";
+                }, 2500);
+            } catch (err) {
+                console.error('Copy failed', err);
+            } finally {
+                hiddenCopyArea.classList.add('sr-only');
+            }
+        });
+    </script>
+</body>
+</html>
+```
